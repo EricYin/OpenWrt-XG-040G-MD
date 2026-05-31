@@ -159,7 +159,7 @@ else
 fi
 
 # PassWall (代理软件)
-pkgs=("psswall"); UPDATE_PACKAGE pkgs "Openwrt-Passwall/openwrt-passwall" "main" "pkg"; unset pkgs
+pkgs=("passwall"); UPDATE_PACKAGE pkgs "Openwrt-Passwall/openwrt-passwall" "main" "pkg"; unset pkgs
 PATCH_PASSWALL_GLOBAL_LUA
 
 # OpenWrt 25.12 下 shadowsocksr-libev 的上游归档内容已变化，旧 MIRROR_HASH 失效。
