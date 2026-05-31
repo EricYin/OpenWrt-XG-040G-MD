@@ -140,6 +140,12 @@ pkgs=("luci-app-vsftpd"); UPDATE_PACKAGE pkgs "ericyin/luci" "openwrt-25.12" "pk
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vsftpd/Makefile
 # cat ./luci-app-vsftpd/Makefile
 
+# windows/office tool
+pkgs=("vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "openwrt-25.12" "pkg"; unset pkgs
+pkgs=("luci-app-vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/luci" "openwrt-25.12" "pkg"; unset pkgs
+sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vlmcsd/Makefile
+cat ./luci-app-vlmcsd/Makefile
+
 # 
 # Argon 主题
 pkgs=("luci-theme-argon"); UPDATE_PACKAGE pkgs "jerrykuku/luci-theme-argon" "master"; unset pkgs
