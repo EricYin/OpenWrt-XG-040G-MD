@@ -43,7 +43,7 @@ UPDATE_PACKAGE() {
 
 	echo " "
 	echo "=========================================="
-	echo "Processing: $PKG_NAMES from $PKG_REPO, repository name: $REPO_NAME"
+	(IFS=" | "; echo "Processing: ${PKG_NAMES[*]} from $PKG_REPO, repository name: $REPO_NAME")
 	echo "=========================================="
 
 	# 删除 feeds 中可能存在的同名软件包
@@ -88,8 +88,8 @@ UPDATE_PACKAGE() {
 		# 重命名仓库
 	#	mv -f $REPO_NAME $PKG_NAME
 	fi
-
-	echo "Done: $PKG_NAMES"
+	
+    (IFS=" | "; echo "Done: ${PKG_NAMES[*]}")
 }
 
 PATCH_PASSWALL_GLOBAL_LUA() {
