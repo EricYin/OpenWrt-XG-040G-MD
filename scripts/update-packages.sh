@@ -35,7 +35,7 @@ UPDATE_FEED_PACKAGE() {
 }
 
 UPDATE_PACKAGE() {
-	local PKG_NAMES=$1
+	local -n PKG_NAMES=$1
 	local PKG_REPO=$2
 	local PKG_BRANCH=$3
 	local PKG_SPECIAL=$4
@@ -128,22 +128,22 @@ rm -rf ../package/feeds/packages/sing-box
 echo "Done removing sing-box from feeds"
 
 # HomeProxy (代理软件) - 使用第5个参数指定额外要删除的包名
-UPDATE_PACKAGE ("homeproxy") "immortalwrt/homeproxy" "master"
+pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
 
 # soc status app
-UPDATE_PACKAGE ("luci-app-airoha-npu") "ericyin/luci-app-airoha-npu" "main"
+pkgs=("luci-app-airoha-npu"); UPDATE_PACKAGE pkgs "ericyin/luci-app-airoha-npu" "main"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-airoha-npu/Makefile
 # cat ./luci-app-airoha-npu/Makefile
 
 # vsftpd ui
-UPDATE_PACKAGE ("luci-app-vsftpd") "ericyin/luci" "openwrt-25.12" "pkg"
+pkgs=("luci-app-vsftpd"); UPDATE_PACKAGE pkgs "ericyin/luci" "openwrt-25.12" "pkg"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vsftpd/Makefile
 # cat ./luci-app-vsftpd/Makefile
 
 # 
 # Argon 主题
-UPDATE_PACKAGE ("luci-theme-argon") "jerrykuku/luci-theme-argon" "master"
-UPDATE_PACKAGE ("luci-app-argon-config") "jerrykuku/luci-app-argon-config" "master"
+pkgs=("luci-theme-argon"); UPDATE_PACKAGE pkgs "jerrykuku/luci-theme-argon" "master"; unset pkgs
+pkgs=("luci-app-argon-config"); UPDATE_PACKAGE pkgs "jerrykuku/luci-app-argon-config" "master"; unset pkgs
 
 # 修改 LuCI 默认主题为 Argon（保留 bootstrap 包可共存）
 echo " "
@@ -159,7 +159,7 @@ else
 fi
 
 # PassWall (代理软件)
-UPDATE_PACKAGE ("passwall") "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
+pkgs=("psswall"); UPDATE_PACKAGE pkgs "Openwrt-Passwall/openwrt-passwall" "main" "pkg"; unset pkgs
 PATCH_PASSWALL_GLOBAL_LUA
 
 # OpenWrt 25.12 下 shadowsocksr-libev 的上游归档内容已变化，旧 MIRROR_HASH 失效。
