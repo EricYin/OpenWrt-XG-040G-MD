@@ -35,20 +35,19 @@ UPDATE_FEED_PACKAGE() {
 }
 
 UPDATE_PACKAGE() {
-	local PKG_NAME=$1
+	local PKG_NAMES=$1
 	local PKG_REPO=$2
 	local PKG_BRANCH=$3
 	local PKG_SPECIAL=$4
-	local PKG_LIST=("$PKG_NAME" $5)
 	local REPO_NAME=${PKG_REPO#*/}
 
 	echo " "
 	echo "=========================================="
-	echo "Processing: $PKG_NAME from $PKG_REPO"
+	echo "Processing: $PKG_NAMES from $PKG_REPO, repository name: $REPO_NAME"
 	echo "=========================================="
 
 	# 删除 feeds 中可能存在的同名软件包
-	for NAME in "${PKG_LIST[@]}"; do
+	for NAME in "${PKG_NAMES[@]}"; do
 	    if [ -z "$NAME" ]; then
 		    continue
 		fi
@@ -78,14 +77,19 @@ UPDATE_PACKAGE() {
 	# 处理克隆的仓库
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
 		# 从大杂烩仓库中提取特定包
-		find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune -exec cp -rf {} ./ \;
+		for NAME in "${PKG_NAMES[@]}"; do
+	        if [ -z "$NAME" ]; then
+		        continue
+		    fi
+		    find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$NAME*" -prune -exec cp -rf {} ./ \;
+		done
 		rm -rf ./$REPO_NAME/
-	elif [[ "$PKG_SPECIAL" == "name" ]]; then
+	# elif [[ "$PKG_SPECIAL" == "name" ]]; then
 		# 重命名仓库
-		mv -f $REPO_NAME $PKG_NAME
+	#	mv -f $REPO_NAME $PKG_NAME
 	fi
 
-	echo "Done: $PKG_NAME"
+	echo "Done: $PKG_NAMES"
 }
 
 PATCH_PASSWALL_GLOBAL_LUA() {
@@ -124,22 +128,22 @@ rm -rf ../package/feeds/packages/sing-box
 echo "Done removing sing-box from feeds"
 
 # HomeProxy (代理软件) - 使用第5个参数指定额外要删除的包名
-UPDATE_PACKAGE "homeproxy" "immortalwrt/homeproxy" "master"
+UPDATE_PACKAGE ("homeproxy") "immortalwrt/homeproxy" "master"
 
 # soc status app
-UPDATE_PACKAGE "luci-app-airoha-npu" "ericyin/luci-app-airoha-npu" "main"
+UPDATE_PACKAGE ("luci-app-airoha-npu") "ericyin/luci-app-airoha-npu" "main"
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-airoha-npu/Makefile
 # cat ./luci-app-airoha-npu/Makefile
 
 # vsftpd ui
-UPDATE_PACKAGE "luci-app-vsftpd" "ericyin/luci" "openwrt-25.12" "pkg" "" "luci"
+UPDATE_PACKAGE ("luci-app-vsftpd") "ericyin/luci" "openwrt-25.12" "pkg"
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vsftpd/Makefile
 # cat ./luci-app-vsftpd/Makefile
 
 # 
 # Argon 主题
-UPDATE_PACKAGE "luci-theme-argon" "jerrykuku/luci-theme-argon" "master"
-UPDATE_PACKAGE "luci-app-argon-config" "jerrykuku/luci-app-argon-config" "master"
+UPDATE_PACKAGE ("luci-theme-argon") "jerrykuku/luci-theme-argon" "master"
+UPDATE_PACKAGE ("luci-app-argon-config") "jerrykuku/luci-app-argon-config" "master"
 
 # 修改 LuCI 默认主题为 Argon（保留 bootstrap 包可共存）
 echo " "
@@ -155,7 +159,7 @@ else
 fi
 
 # PassWall (代理软件)
-UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
+UPDATE_PACKAGE ("passwall") "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
 PATCH_PASSWALL_GLOBAL_LUA
 
 # OpenWrt 25.12 下 shadowsocksr-libev 的上游归档内容已变化，旧 MIRROR_HASH 失效。
