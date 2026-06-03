@@ -133,18 +133,15 @@ pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset 
 # soc status app
 pkgs=("luci-app-airoha-npu"); UPDATE_PACKAGE pkgs "ericyin/luci-app-airoha-npu" "main"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-airoha-npu/Makefile
-# cat ./luci-app-airoha-npu/Makefile
 
 # vsftpd ui
-pkgs=("luci-app-vsftpd"); UPDATE_PACKAGE pkgs "ericyin/luci" "openwrt-25.12" "pkg"; unset pkgs
-sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vsftpd/Makefile
-# cat ./luci-app-vsftpd/Makefile
+# pkgs=("luci-app-vsftpd"); UPDATE_PACKAGE pkgs "ericyin/luci" "openwrt-25.12" "pkg"; unset pkgs
+# sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vsftpd/Makefile
 
 # windows/office tool
 pkgs=("vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "openwrt-25.12" "pkg"; unset pkgs
 pkgs=("luci-app-vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/luci" "openwrt-25.12" "pkg"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vlmcsd/Makefile
-cat ./luci-app-vlmcsd/Makefile
 
 # 
 # Argon 主题
