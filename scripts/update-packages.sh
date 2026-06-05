@@ -76,6 +76,14 @@ UPDATE_PACKAGE() {
 
 	# 处理克隆的仓库
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
+	   for NAME in "${PKG_NAMES[@]}"; do
+		    if [[ "$REPO_NAME" == "$NAME" ]]; then
+			   echo "Rename repository folder to ${REPO_NAME}1 as it is same as target pkg folder"
+			   mv ./$REPO_NAME ./${REPO_NAME}1
+			   REPO_NAME=${REPO_NAME}1
+			   break
+			fi
+		done
 		# 从大杂烩仓库中提取特定包
 		for NAME in "${PKG_NAMES[@]}"; do
 	        if [ -z "$NAME" ]; then
