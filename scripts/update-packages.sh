@@ -143,6 +143,10 @@ pkgs=("vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "openwrt-25.12" "pkg
 pkgs=("luci-app-vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/luci" "openwrt-25.12" "pkg"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vlmcsd/Makefile
 
+# file explorer
+pkgs=("luci-app-quickfile-go"); UPDATE_PACKAGE pkgs "ericyin/luci-app-quickfile-go" "main" "pkg"; unset pkgs
+# sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-quickfile-go/Makefile
+
 # 
 # Argon 主题
 pkgs=("luci-theme-argon"); UPDATE_PACKAGE pkgs "jerrykuku/luci-theme-argon" "master"; unset pkgs
