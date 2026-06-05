@@ -145,7 +145,8 @@ sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-ap
 
 # file explorer
 pkgs=("luci-app-quickfile-go"); UPDATE_PACKAGE pkgs "ericyin/luci-app-quickfile-go" "main" "pkg"; unset pkgs
-ls ./luci-app-quickfile-go
+ls
+ls luci-app-quickfile-go
 
 # 
 # Argon 主题
