@@ -153,8 +153,6 @@ sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-ap
 
 # file explorer
 pkgs=("luci-app-quickfile-go"); UPDATE_PACKAGE pkgs "ericyin/luci-app-quickfile-go" "main" "pkg"; unset pkgs
-ls
-ls luci-app-quickfile-go
 
 # 
 # Argon 主题
@@ -207,5 +205,6 @@ fi
 
 echo " "
 echo "=========================================="
-echo "Package updates completed!"
+echo "Package updates completed, list packages folder: "
+ls
 echo "=========================================="
