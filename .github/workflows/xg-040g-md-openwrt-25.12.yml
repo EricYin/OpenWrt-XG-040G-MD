@@ -10,7 +10,7 @@ on:
       log_switch:
         description: "Build logs"
         required: false
-        default: false
+        default: true
         type: boolean
   #push:
   #  branches:
