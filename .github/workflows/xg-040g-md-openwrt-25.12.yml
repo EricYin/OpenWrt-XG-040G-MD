@@ -29,7 +29,6 @@ on:
 env:
   CONFIG_FILE: "config/xg-040g-md.config"
   REPO_URL: https://github.com/ericyin/openwrt.git
-  REPO_BRANCH: openwrt-25.12
   FEEDS_CONF: feeds.conf.default
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -90,6 +89,7 @@ jobs:
       - name: Clone OpenWrt source code (openwrt-25.12)
         run: |
           echo "REPO_BRANCH=${{ inputs.release_branch_tag }}" >> $GITHUB_ENV
+          echo "Checking out branch/tag: ${{ env.REPO_BRANCH }}"
           git clone --depth 1 --branch "$REPO_BRANCH" "$REPO_URL" openwrt
 
       - name: Install Patches
