@@ -1,4 +1,4 @@
-name: Build_XG_040G_MD_OpenWrt_25_12
+name: Build_XG_040G_MD_OpenWrt_Custom
 
 permissions:
   contents: write
@@ -86,7 +86,7 @@ jobs:
           python3 -m pip install --upgrade pip setuptools wheel
           python3 -m pip install Unidecode
 
-      - name: Clone OpenWrt source code (openwrt-25.12)
+      - name: Clone OpenWrt source code
         run: |
           echo "REPO_BRANCH=${{ inputs.release_branch_tag }}" >> $GITHUB_ENV
           echo "Checking out branch/tag: ${{ env.REPO_BRANCH }}"
@@ -233,7 +233,7 @@ jobs:
         run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           cat <<EOF > release.txt
-          🚀 OpenWrt firmware for XG-040G-MD (openwrt-25.12)
+          🚀 OpenWrt firmware for XG-040G-MD (${{ env.REPO_BRANCH }})
           ----------------------
           设备型号: XG-040G-MD
           构建时间: $(date +"%Y-%m-%d %H:%M")
