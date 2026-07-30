@@ -149,7 +149,7 @@ sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-ap
 vlmcsd_branch=""
 if [[ "$build_mode" == "openwrt-25.12" ]]; then
 	vlmcsd_branch="openwrt-25.12"
-elif [[ "$build_mode" == "openwrt-master" ]]; then
+elif [[ "$build_mode" == "main" ]]; then
 	vlmcsd_branch="master"
 fi
 
