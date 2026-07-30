@@ -3,6 +3,7 @@
 # 此脚本在 openwrt/package/ 目录下运行，在 feeds install 之后执行
 
 build_mode="$1"
+echo "Build mode: $build_mode"
 
 UPDATE_FEED_PACKAGE() {  
     local PKG_NAME=$1
