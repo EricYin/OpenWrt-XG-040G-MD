@@ -143,7 +143,7 @@ jobs:
         working-directory: ./openwrt/package
         run: |
           chmod +x $GITHUB_WORKSPACE/scripts/update-packages.sh
-          bash $GITHUB_WORKSPACE/scripts/update-packages.sh
+          bash $GITHUB_WORKSPACE/scripts/update-packages.sh ${{ env.REPO_BRANCH }}
           
       - name: Hotfix rust llvm CI option
         working-directory: ./openwrt
