@@ -147,14 +147,24 @@ jobs:
           
       - name: Hotfix rust llvm CI option
         working-directory: ./openwrt
+        if: ${{ env.REPO_BRANCH != 'main' }}
         run: |
           sed -i 's/--set=llvm.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/'             feeds/packages/lang/rust/Makefile
           grep -n "download-ci-llvm" feeds/packages/lang/rust/Makefile
+       
 
       - name: Copy configuration and defconfig
         run: |
           cp -fv "${CONFIG_FILE}" openwrt/.config
-          cd openwrt && make defconfig
+          cd openwrt
+          if [[ "${{ env.REPO_BRANCH }}" == "main" ]]; then
+              echo "set an7581_DEVICE in config file for main..."
+              sed -i '/^CONFIG_TARGET_airoha_an7581_DEVICE_/d' .config
+              printf 'CONFIG_TARGET_airoha_an7581_DEVICE_%s=y\n' "nokia_xg-040g-md-tcboot" >> .config        
+              sed -i '/^CONFIG_LINUX_6_12=/d;/^CONFIG_LINUX_6_18=/d' .config
+              printf 'CONFIG_LINUX_6_18=y\n' >> .config
+          fi
+          make defconfig
           [ -e .config ] && cp .config defconfig-final.config
 
       - name: Upload build config files
