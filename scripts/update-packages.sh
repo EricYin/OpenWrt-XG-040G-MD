@@ -1,6 +1,9 @@
 #!/bin/bash
 # 安装和更新第三方软件包
 # 此脚本在 openwrt/package/ 目录下运行，在 feeds install 之后执行
+
+build_mode="$1"
+
 UPDATE_FEED_PACKAGE() {  
     local PKG_NAME=$1
 	local PKG_REPO=$2
@@ -142,14 +145,19 @@ pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset 
 pkgs=("luci-app-airoha-npu"); UPDATE_PACKAGE pkgs "ericyin/luci-app-airoha-npu" "main"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-airoha-npu/Makefile
 
-# vsftpd ui
-# pkgs=("luci-app-vsftpd"); UPDATE_PACKAGE pkgs "ericyin/luci" "openwrt-25.12" "pkg"; unset pkgs
-# sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vsftpd/Makefile
-
 # windows/office tool
-pkgs=("vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "openwrt-25.12" "pkg"; unset pkgs
-pkgs=("luci-app-vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/luci" "openwrt-25.12" "pkg"; unset pkgs
-sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vlmcsd/Makefile
+vlmcsd_branch=""
+if [[ "$build_mode" == "openwrt-25.12" ]]; then
+	vlmcsd_branch="openwrt-25.12"
+elif [[ "$build_mode" == "openwrt-master" ]]; then
+	vlmcsd_branch="master"
+fi
+
+if [[ -n "$vlmcsd_branch" ]]; then
+    pkgs=("vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "$vlmcsd_branch" "pkg"; unset pkgs
+    pkgs=("luci-app-vlmcsd"); UPDATE_PACKAGE pkgs "immortalwrt/luci"  "$vlmcsd_branch" "pkg"; unset pkgs
+    sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-vlmcsd/Makefile
+fi
 
 # file explorer
 pkgs=("luci-app-quickfile-go"); UPDATE_PACKAGE pkgs "ericyin/luci-app-quickfile-go" "main" "pkg"; unset pkgs
