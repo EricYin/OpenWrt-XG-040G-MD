@@ -143,16 +143,8 @@ jobs:
         working-directory: ./openwrt/package
         run: |
           chmod +x $GITHUB_WORKSPACE/scripts/update-packages.sh
-          bash $GITHUB_WORKSPACE/scripts/update-packages.sh ${{ env.REPO_BRANCH }}
-          
-      - name: Hotfix rust llvm CI option
-        working-directory: ./openwrt
-        if: ${{ env.REPO_BRANCH != 'main' }}
-        run: |
-          sed -i 's/--set=llvm.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/'             feeds/packages/lang/rust/Makefile
-          grep -n "download-ci-llvm" feeds/packages/lang/rust/Makefile
-       
-
+          bash $GITHUB_WORKSPACE/scripts/update-packages.sh ${{ env.REPO_BRANCH }}         
+      
       - name: Copy configuration and defconfig
         run: |
           cp -fv "${CONFIG_FILE}" openwrt/.config
