@@ -148,7 +148,7 @@ sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-ap
 
 # windows/office tool
 vlmcsd_branch=""
-if [[ $build_mode == openwrt-25.12* ]]; then
+if [[ $build_mode == openwrt-25.12.* ]]; then
 	vlmcsd_branch="openwrt-25.12"
 elif [[ $build_mode == main ]]; then
 	vlmcsd_branch="master"
