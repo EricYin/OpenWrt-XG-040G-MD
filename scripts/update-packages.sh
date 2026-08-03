@@ -47,7 +47,7 @@ UPDATE_PACKAGE() {
 
 	echo " "
 	echo "=========================================="
-	(IFS=" | "; echo "Processing: ${PKG_NAMES[*]} from $PKG_REPO, repository: $REPO_NAME", branch: $PKG_BRANCH )
+	(IFS=" | "; echo "Processing: ${PKG_NAMES[*]} from $PKG_REPO, repository: $REPO_NAME, branch: $PKG_BRANCH" )
 	echo "=========================================="
 
 	# 删除 feeds 中可能存在的同名软件包
