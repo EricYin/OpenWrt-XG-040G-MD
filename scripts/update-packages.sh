@@ -140,9 +140,9 @@ rm -rf ../package/feeds/packages/sing-box
 echo "Done removing sing-box from feeds"
 
 # HomeProxy (代理软件) - 使用第5个参数指定额外要删除的包名
-pkgs=("sing-box"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "master" "pkg"; unset pkgs
-#pkgs=("luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "main" "pkg"; unset pkgs
-pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
+pkgs=("sing-box"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "main" "pkg"; unset pkgs
+pkgs=("luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "main" "pkg"; unset pkgs
+#pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
 
 # soc status app
 pkgs=("luci-app-airoha-npu"); UPDATE_PACKAGE pkgs "ericyin/luci-app-airoha-npu" "main"; unset pkgs
