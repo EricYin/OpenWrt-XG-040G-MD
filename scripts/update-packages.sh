@@ -140,7 +140,8 @@ rm -rf ../package/feeds/packages/sing-box
 echo "Done removing sing-box from feeds"
 
 # HomeProxy (代理软件) - 使用第5个参数指定额外要删除的包名
-pkgs=("luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "main" "pkg"; unset pkgs
+#pkgs=("luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "main" "pkg"; unset pkgs
+pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
 
 # soc status app
 pkgs=("luci-app-airoha-npu"); UPDATE_PACKAGE pkgs "ericyin/luci-app-airoha-npu" "main"; unset pkgs
@@ -181,35 +182,37 @@ else
 	echo "WARNING: No LuCI collection Makefile found, skip theme default patch"
 fi
 
-# PassWall (代理软件)
-pkgs=("passwall"); UPDATE_PACKAGE pkgs "Openwrt-Passwall/openwrt-passwall" "main" "pkg"; unset pkgs
-PATCH_PASSWALL_GLOBAL_LUA
-
-# OpenWrt 25.12 下 shadowsocksr-libev 的上游归档内容已变化，旧 MIRROR_HASH 失效。
-# 先禁用 SSR 组件，避免 passwall 选择该包导致下载阶段直接失败。
-PASSWALL_MAKEFILE="./luci-app-passwall/Makefile"
-if [ -f "$PASSWALL_MAKEFILE" ]; then
-	echo "Patching PassWall defaults to disable broken ShadowsocksR components..."
-	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Client/,/default y/s/default y/default n/' "$PASSWALL_MAKEFILE"
-	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server/,/default n/s/default n/default n/' "$PASSWALL_MAKEFILE"
-fi
-
-# PassWall 依赖包
-echo " "
-echo "=========================================="
-echo "Installing PassWall dependencies..."
-echo "=========================================="
-git clone --depth=1 --single-branch --branch main "https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git"
-if [ -d "openwrt-passwall-packages" ]; then
-	for pkg in openwrt-passwall-packages/*/; do
-		pkg_name=$(basename "$pkg")
-		if [ -d "$pkg" ] && [ -f "$pkg/Makefile" ]; then
-			echo "Installing: $pkg_name"
-			rm -rf "./$pkg_name"
-			cp -rf "$pkg" ./
-		fi
-	done
-	rm -rf openwrt-passwall-packages
+if [ -n "$OPT_PASSWALL" ] && [ "$OPT_PASSWALL" -eq 1 ]; then
+	# PassWall (代理软件)
+	pkgs=("passwall"); UPDATE_PACKAGE pkgs "Openwrt-Passwall/openwrt-passwall" "main" "pkg"; unset pkgs
+	PATCH_PASSWALL_GLOBAL_LUA
+	
+	# OpenWrt 25.12 下 shadowsocksr-libev 的上游归档内容已变化，旧 MIRROR_HASH 失效。
+	# 先禁用 SSR 组件，避免 passwall 选择该包导致下载阶段直接失败。
+	PASSWALL_MAKEFILE="./luci-app-passwall/Makefile"
+	if [ -f "$PASSWALL_MAKEFILE" ]; then
+		echo "Patching PassWall defaults to disable broken ShadowsocksR components..."
+		sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Client/,/default y/s/default y/default n/' "$PASSWALL_MAKEFILE"
+		sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server/,/default n/s/default n/default n/' "$PASSWALL_MAKEFILE"
+	fi
+	
+	# PassWall 依赖包
+	echo " "
+	echo "=========================================="
+	echo "Installing PassWall dependencies..."
+	echo "=========================================="
+	git clone --depth=1 --single-branch --branch main "https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git"
+	if [ -d "openwrt-passwall-packages" ]; then
+		for pkg in openwrt-passwall-packages/*/; do
+			pkg_name=$(basename "$pkg")
+			if [ -d "$pkg" ] && [ -f "$pkg/Makefile" ]; then
+				echo "Installing: $pkg_name"
+				rm -rf "./$pkg_name"
+				cp -rf "$pkg" ./
+			fi
+		done
+		rm -rf openwrt-passwall-packages
+	fi
 fi
 
 echo " "
