@@ -7,8 +7,13 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
+      repository: 
+        description: "Git repository."
+        required: true
+        type: string
+        default: "https://github.com/openwrt/openwrt.git"
       release_branch_tag:
-        description: "Existing release tag to upload the executables to."
+        description: "Branch"
         required: true
         type: string
         default: "main"
@@ -20,7 +25,6 @@ on:
 
 env:
   CONFIG_FILE: "config/xg-040g-mf.config"
-  REPO_URL: https://github.com/openwrt/openwrt.git
   FEEDS_CONF: feeds.conf.default
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -37,6 +41,7 @@ jobs:
     steps:
       - name: Set Environment Variable
         run: |
+          echo "REPO_URL=${{ inputs.repository }}" >> $GITHUB_ENV
           echo "REPO_BRANCH=${{ inputs.release_branch_tag }}" >> $GITHUB_ENV
 
       - name: Checkout
