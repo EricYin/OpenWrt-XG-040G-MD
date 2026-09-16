@@ -10,8 +10,13 @@ on:
       repository: 
         description: "Git repository."
         required: true
-        type: string
-        default: "https://github.com/openwrt/openwrt.git"
+        type: choice
+        default: "immortalwrt/immortalwrt"
+        options:
+          - immortalwrt/immortalwrt
+          - openwrt/openwrt
+          - ericyin/immortalwrt
+          - ericyin/openwrt
       release_branch_tag:
         description: "Branch"
         required: true
@@ -41,7 +46,7 @@ jobs:
     steps:
       - name: Set Environment Variable
         run: |
-          echo "REPO_URL=${{ inputs.repository }}" >> $GITHUB_ENV
+          echo "REPO_URL=https://github.com/${{ inputs.repository }}.git" >> $GITHUB_ENV
           echo "REPO_BRANCH=${{ inputs.release_branch_tag }}" >> $GITHUB_ENV
 
       - name: Checkout
