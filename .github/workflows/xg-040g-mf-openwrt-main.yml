@@ -37,6 +37,8 @@ env:
   KEEP_RELEASE_MARKER: "[keep-release]"
   CCACHE_DIR: /mnt/openwrt/ccache
   CCACHE_MAXSIZE: 5G
+  WRT_IP: 192.168.50.233
+  WRT_NAME: XG-040G-MF
   TZ: Asia/Shanghai
 
 jobs:
@@ -48,7 +50,8 @@ jobs:
         run: |
           echo "REPO_URL=https://github.com/${{ inputs.repository }}.git" >> $GITHUB_ENV
           echo "REPO_BRANCH=${{ inputs.release_branch_tag }}" >> $GITHUB_ENV
-
+          echo "WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d-%H.%M.%S")" >> $GITHUB_ENV
+          
       - name: Checkout
         uses: actions/checkout@v6
 
