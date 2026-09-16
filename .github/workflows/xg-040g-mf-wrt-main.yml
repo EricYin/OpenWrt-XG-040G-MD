@@ -1,4 +1,4 @@
-name: Build_XG_040G_MF_OpenWrt-Custom
+name: Build_XG_040G_MF_Wrt-Custom
 
 permissions:
   contents: write
@@ -154,6 +154,8 @@ jobs:
         run: |
           cp -fv "${CONFIG_FILE}" openwrt/.config
           cd openwrt
+          chmod +x $GITHUB_WORKSPACE/scripts/setting.sh
+          bash $GITHUB_WORKSPACE/scripts/setting.sh
           make defconfig
           [ -e .config ] && cp .config defconfig-final.config
 
