@@ -144,6 +144,8 @@ echo "Done removing sing-box from feeds"
 pkgs=("sing-box" "luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "legacy" "pkg"; unset pkgs
 #pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
 
+pkgs=("easytier" "luci-app-easytier"); UPDATE_PACKAGE pkgs "EasyTier/luci-app-easytier" "main" "pkg"; unset pkgs
+
 # soc status app
 pkgs=("luci-app-airoha-npu"); UPDATE_PACKAGE pkgs "ericyin/luci-app-airoha-npu" "main"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./luci-app-airoha-npu/Makefile
