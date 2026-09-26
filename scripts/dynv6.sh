@@ -1,7 +1,7 @@
 #!/bin/sh
 
 INTERFACE="br-lan"
-TOKEN="token"
+TOKEN=""
 DOMAIN="19991999.dynv6.net"
 INTERVAL=600
 # ===================================================
@@ -13,6 +13,11 @@ log_to_sys() {
     #echo "$1"
     logger -t "dynv6" "$1"
 }
+
+if [ -z "$token" ]; then
+    echo "Token not set."
+    exit 1
+fi
 
 # 检查系统是否安装了必需的 curl 工具
 if ! command -v curl >/dev/null 2>&1; then
