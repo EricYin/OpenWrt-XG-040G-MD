@@ -15,7 +15,7 @@ log_to_sys() {
 }
 
 if [ -z "$token" ]; then
-    echo "Token not set."
+    log_to_sys "Token not set."
     exit 1
 fi
 
