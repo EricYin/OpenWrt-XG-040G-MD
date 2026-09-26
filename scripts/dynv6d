@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+
+start_service() {
+    procd_open_instance
+    
+    # 核心指令：让 procd 去执行你的自循环脚本
+    procd_set_param command /usr/bin/dynv6.sh
+    
+    # 将脚本的 echo 输出和错误信息，直接对接到 OpenWrt 的系统日志（logread）中
+    procd_set_param stdout 1
+    procd_set_param stderr 1
+    
+    # 自动重试机制：万一你的 sh 脚本报错退出了，procd 会在几秒后自动再次启动它
+    procd_set_param respawn
+    
+    procd_close_instance
+}
