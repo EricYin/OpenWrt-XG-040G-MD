@@ -4,5 +4,5 @@ chmod +x /usr/bin/dynv6.sh
 chmod +x /etc/init.d/dynv6d
 
 /etc/init.d/dynv6d enable
-
+/etc/init.d/dynv6d start
 exit 0
