@@ -100,10 +100,11 @@ jobs:
           echo "Checking out branch/tag: ${{ env.REPO_BRANCH }}"
           git clone --depth 1 --branch "$REPO_BRANCH" "$REPO_URL" openwrt
 
-      #- name: Install Patches
-      #  run: |
-      #    chmod +x $GITHUB_WORKSPACE/scripts/install-patch.sh
-      #    bash $GITHUB_WORKSPACE/scripts/install-patch.sh
+      - name: Install Any
+        working-directory: ./openwrt
+        run: |
+          chmod +x $GITHUB_WORKSPACE/scripts/install-any.sh
+          bash $GITHUB_WORKSPACE/scripts/install-any.sh
           
       - name: Move build dirs to /mnt/openwrt
         run: |
