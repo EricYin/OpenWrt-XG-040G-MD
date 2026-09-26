@@ -1,0 +1,8 @@
+#!/bin/sh
+
+chmod +x /usr/bin/dynv6.sh
+chmod +x /etc/init.d/dynv6d
+
+/etc/init.d/dynv6d enable
+
+exit 0
