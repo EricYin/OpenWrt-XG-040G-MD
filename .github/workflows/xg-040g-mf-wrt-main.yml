@@ -101,7 +101,6 @@ jobs:
           git clone --depth 1 --branch "$REPO_BRANCH" "$REPO_URL" openwrt
 
       - name: Install Any
-        working-directory: ./openwrt
         run: |
           chmod +x $GITHUB_WORKSPACE/scripts/install-any.sh
           bash $GITHUB_WORKSPACE/scripts/install-any.sh
