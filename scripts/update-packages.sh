@@ -130,11 +130,11 @@ PATCH_PASSWALL_GLOBAL_LUA() {
 
 echo "Starting package updates..."
 
-# 首先删除 feeds 中的 sing-box 相关包，避免与第三方包冲突
-#echo " "
 #echo "=========================================="
+
+# 首先删除 feeds 中的 sing-box 相关包，避免与第三方包冲突
 #echo "Removing conflicting sing-box packages from feeds..."
-echo "=========================================="
+#echo "=========================================="
 #rm -rf ../feeds/packages/net/sing-box
 #rm -rf ../package/feeds/packages/sing-box
 #echo "Done removing sing-box from feeds"
