@@ -142,8 +142,9 @@ echo "=========================================="
 # HomeProxy (代理软件) - 使用第5个参数指定额外要删除的包名
 #pkgs=("sing-box" "luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/VIKINGYFY-packages" "main" "pkg"; unset pkgs
 #pkgs=("sing-box" "luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "legacy3" "pkg"; unset pkgs
-#pkgs=("sing-box"); UPDATE_PACKAGE pkgs "immortalwrt/packages" "master" "pkg"; unset pkgs
+pkgs=("sing-box"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "legacy" "pkg"; unset pkgs
 pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
+sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./homeproxy/Makefile
 
 #pkgs=("easytier" "luci-app-easytier"); UPDATE_PACKAGE pkgs "EasyTier/luci-app-easytier" "main" "pkg"; unset pkgs
 
