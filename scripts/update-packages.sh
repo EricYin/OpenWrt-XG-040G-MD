@@ -143,6 +143,8 @@ echo "Done removing sing-box from feeds"
 #pkgs=("sing-box" "luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/VIKINGYFY-packages" "main" "pkg"; unset pkgs
 #pkgs=("sing-box" "luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "legacy3" "pkg"; unset pkgs
 pkgs=("sing-box"); UPDATE_PACKAGE pkgs "ericyin/luci-app-homeproxy" "legacy" "pkg"; unset pkgs
+sed -i 's|include ../../lang/golang/golang-package.mk|include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk|' ./sing-box/Makefile
+
 pkgs=("homeproxy"); UPDATE_PACKAGE pkgs "immortalwrt/homeproxy" "master"; unset pkgs
 sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' ./homeproxy/Makefile
 
