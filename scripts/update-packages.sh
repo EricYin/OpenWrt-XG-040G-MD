@@ -135,9 +135,9 @@ echo "Starting package updates..."
 # 首先删除 feeds 中的 sing-box 相关包，避免与第三方包冲突
 #echo "Removing conflicting sing-box packages from feeds..."
 #echo "=========================================="
-#rm -rf ../feeds/packages/net/sing-box
-#rm -rf ../package/feeds/packages/sing-box
-#echo "Done removing sing-box from feeds"
+rm -rf ../feeds/packages/net/sing-box
+rm -rf ../package/feeds/packages/sing-box
+echo "Done removing sing-box from feeds"
 
 # HomeProxy (代理软件) - 使用第5个参数指定额外要删除的包名
 #pkgs=("sing-box" "luci-app-homeproxy"); UPDATE_PACKAGE pkgs "ericyin/VIKINGYFY-packages" "main" "pkg"; unset pkgs
