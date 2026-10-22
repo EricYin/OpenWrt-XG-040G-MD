@@ -175,6 +175,19 @@ jobs:
           # Remove small incomplete files <1KB
           find dl -size -1024c -delete
 
+      - name: Compile Sing-Box and dependencies
+        working-directory: ./openwrt
+        run: |
+          set -euo pipefail
+
+          test -f package/sing-box/Makefile
+          test -f package/libcronet/Makefile
+          test -f package/gn/Makefile
+          grep -qx 'CONFIG_PACKAGE_sing-box=y' .config
+
+          make -j"$(nproc)" package/sing-box/compile || \
+            make -j1 package/sing-box/compile V=s
+
       - name: Compile OpenWrt firmware
         id: compile
         run: |
