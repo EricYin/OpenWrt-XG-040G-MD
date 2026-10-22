@@ -175,6 +175,12 @@ jobs:
           # Remove small incomplete files <1KB
           find dl -size -1024c -delete
 
+      - name: Prepare OpenWrt build environment
+        working-directory: ./openwrt
+        run: |
+          make -j"$(nproc)" prepare || \
+            make -j1 prepare V=s
+
       - name: Compile Sing-Box and dependencies
         working-directory: ./openwrt
         run: |
