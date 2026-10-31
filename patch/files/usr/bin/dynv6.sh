@@ -1,43 +1,53 @@
 #!/bin/sh
 
 
-# 1. 太平洋电脑网 IP API
-# 响应格式: if(window.IPCallBack) {IPCallBack({"ip":"202.27.85.42","err":""});}
-echo "1. PConline IP:"
-curl -s https://whois.pconline.com.cn/ipJson.jsp | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}'
-
-# 2. DDNSPOD IPv4
-# 响应格式: 19.27.81.42
-echo "2. DDNSPOD IP:"
-curl -s https://ipv4.ddnspod.com
-
-# 3. 花生壳 Oray CheckIP
-# 响应格式: Current IP Address: 13.27.8.4
-echo -e "\n3. Oray IP:"
-curl -s https://ddns.oray.com/checkip | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}'
-
-# 4. 中国科学技术大学 IP
-# 响应格式: 您的IP地址: 19.27.8.2来
-echo "4. USTC IP:"
-curl -s https://ip.ustc.edu.cn/ | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}'
-
-
-
 INTERFACE="br-lan"
 TOKEN=""
-DOMAIN="19991999.dynv6.net"
+DOMAIN="en19991999.dynv6.net"
 INTERVAL=600
 # ===================================================
 
 LAST_IP=""
 IS_FIRST_RUN=1
+CHECK_IPV6=0
+
+function get_public_ipv4() {
+    # 1. 太平洋电脑网 IP API
+    ip1=$(curl -s --max-time 5 https://whois.pconline.com.cn/ipJson.jsp | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | head -n 1)
+
+    # 2. DDNSPOD IPv4
+    ip2=$(curl -s --max-time 5 https://ipv4.ddnspod.com)
+
+    # 3. 花生壳 Oray CheckIP
+    ip3=$(curl -s --max-time 5 https://ddns.oray.com/checkip | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | head -n 1)
+
+    # 4. 中国科学技术大学 IP
+    #ip4=$(curl -s --max-time 5 https://ip.ustc.edu.cn/ | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | head -n 1)
+
+    # 使用 awk 统计 IP 出现次数（POSIX sh 兼容）
+    max_ip=$(printf '%s\n' "$ip1" "$ip2" "$ip3" | grep -E '[0-9]{1,3}(\.[0-9]{1,3}){3}' | sort | uniq -c | sort -rn | head -n 1)
+    max_count=$(echo "$max_ip" | awk '{print $1}')
+    max_ip=$(echo "$max_ip" | awk '{print $2}')
+
+    # 如果最大票数 >= 2，返回该 IP；否则返回空字符串
+    if [ "$max_count" -ge 2 ] 2>/dev/null; then
+        echo "$max_ip"   
+    else
+        echo ""
+    fi
+}
+
+function make_ipv4_to_ipv6() {
+    #  2409:8a5c:1e40:1fd0:4eed:fbff:fe0f:b0e3:50288 
+    echo 2409:8a5c:1e40:1fd0:$(echo "$1" | tr '.' ':')
+}
 
 log_to_sys() {
     #echo "$1"
     logger -t "dynv6" "$1"
 }
 
-if [ -z "$token" ]; then
+if [ -z "$TOKEN" ]; then
     log_to_sys "Token not set."
     exit 1
 fi
@@ -48,21 +58,34 @@ if ! command -v curl >/dev/null 2>&1; then
     exit 1
 fi
 
-log_to_sys "Daemon started. Checking interface: $INTERFACE every $INTERVAL seconds."
+log_to_sys "Daemon started. Checking every $INTERVAL seconds."
+if [ "$CHECK_IPV6" -eq 1 ]; then
+    log_to_sys "Checking interface: $INTERFACE for IPV6"
+else 
+    log_to_sys "Checking public IPV4"
+fi
 
 while true; do
-    # 动态匹配中国联通(2408)、移动(2409)、电信(240e)等公网 IPv6
-    CURRENT_IP=$(ip -6 addr show dev "$INTERFACE" scope global | grep -oE '240[89a-fA-F]:[a-fA-F0-9:]+' | head -n 1)
+    if [ $CHECK_IPV6 -eq 1 ]; then
+        # 动态匹配中国联通(2408)、移动(2409)、电信(240e)等公网 IPv6
+        CURRENT_IP=$(ip -6 addr show dev "$INTERFACE" scope global | grep -oE '240[89a-fA-F]:[a-fA-F0-9:]+' | head -n 1)
+    else
+        CURRENT_IP=$(get_public_ipv4)
+    fi
 
     if [ -n "$CURRENT_IP" ]; then
         if [ $IS_FIRST_RUN -eq 1 ] || [ "$CURRENT_IP" != "$LAST_IP" ]; then
-            
-            CURRENT_IP2=$(echo "$CURRENT_IP" | cut -d':' -f1-4):68:52:87:1
+            if [ $CHECK_IPV6 -eq 1 ]; then
+                CURRENT_IP2=$(echo "$CURRENT_IP" | cut -d':' -f1-4):68:52:87:1
+            else
+                CURRENT_IP2=$(make_ipv4_to_ipv6 "$CURRENT_IP")
+                log_to_sys "IPV4 to IPV6: $CURRENT_IP2"
+            fi
             RESPONSE=$(curl -4 -s "https://dynv6.com/api/update?zone=${DOMAIN}&token=${TOKEN}&ipv6=${CURRENT_IP2}")
             
             case "$RESPONSE" in
                 *updated*|*unchanged*)
-                    log_to_sys "Success. IP/Prefix [$CURRENT_IP/64] registered. (Response: $RESPONSE)"
+                    log_to_sys "Success. IP/Prefix [$CURRENT_IP] registered. (Response: $RESPONSE)"
                     LAST_IP="$CURRENT_IP"
                     IS_FIRST_RUN=0
                     ;;
@@ -73,7 +96,7 @@ while true; do
         fi
     else
         if [ $IS_FIRST_RUN -eq 1 ] || [ -n "$LAST_IP" ]; then
-            log_to_sys "WARNING: No valid public IPv6 address (starting with 240x) found."
+            log_to_sys "WARNING: No valid public IP address found."
             LAST_IP=""
         fi
     fi
