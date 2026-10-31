@@ -65,7 +65,6 @@ while true; do
             else
                 ipv4=$(get_public_ipv4)
                 tail=$(echo "$ipv4" | tr '.' ':')
-                tail="${tail%:}"
             fi
             CURRENT_IP2=$(echo "$CURRENT_IP" | cut -d':' -f1-4):$tail
             RESPONSE=$(curl -4 -s "https://dynv6.com/api/update?zone=${DOMAIN}&token=${TOKEN}&ipv6=${CURRENT_IP2}")
