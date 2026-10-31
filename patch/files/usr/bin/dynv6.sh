@@ -37,11 +37,6 @@ function get_public_ipv4() {
     fi
 }
 
-function make_ipv4_to_ipv6() {
-    #  2409:8a5c:1e40:1fd0:4eed:fbff:fe0f:b0e3:50288 
-    echo 2409:8a5c:1e40:1fd0:$(echo "$1" | tr '.' ':')
-}
-
 log_to_sys() {
     #echo "$1"
     logger -t "dynv6" "$1"
@@ -58,34 +53,25 @@ if ! command -v curl >/dev/null 2>&1; then
     exit 1
 fi
 
-log_to_sys "Daemon started. Checking every $INTERVAL seconds."
-if [ "$CHECK_IPV6" -eq 1 ]; then
-    log_to_sys "Checking interface: $INTERFACE for IPV6"
-else 
-    log_to_sys "Checking public IPV4"
-fi
+log_to_sys "Daemon started. Checking every $INTERVAL seconds on $INTERFACE for IPV6."
 
 while true; do
-    if [ $CHECK_IPV6 -eq 1 ]; then
-        # 动态匹配中国联通(2408)、移动(2409)、电信(240e)等公网 IPv6
-        CURRENT_IP=$(ip -6 addr show dev "$INTERFACE" scope global | grep -oE '240[89a-fA-F]:[a-fA-F0-9:]+' | head -n 1)
-    else
-        CURRENT_IP=$(get_public_ipv4)
-    fi
-
+    # 动态匹配中国联通(2408)、移动(2409)、电信(240e)等公网 IPv6
+    CURRENT_IP=$(ip -6 addr show dev "$INTERFACE" scope global | grep -oE '240[89a-fA-F]:[a-fA-F0-9:]+' | head -n 1)
     if [ -n "$CURRENT_IP" ]; then
         if [ $IS_FIRST_RUN -eq 1 ] || [ "$CURRENT_IP" != "$LAST_IP" ]; then
             if [ $CHECK_IPV6 -eq 1 ]; then
-                CURRENT_IP2=$(echo "$CURRENT_IP" | cut -d':' -f1-4):68:52:87:1
+                tail=68:52:87:1
             else
-                CURRENT_IP2=$(make_ipv4_to_ipv6 "$CURRENT_IP")
-                log_to_sys "IPV4 to IPV6: $CURRENT_IP2"
+                ipv4=$(get_public_ipv4)
+                tail=$(echo "$ipv4" | tr '.' ':')
             fi
+            CURRENT_IP2=$(echo "$CURRENT_IP" | cut -d':' -f1-4):$tail
             RESPONSE=$(curl -4 -s "https://dynv6.com/api/update?zone=${DOMAIN}&token=${TOKEN}&ipv6=${CURRENT_IP2}")
             
             case "$RESPONSE" in
                 *updated*|*unchanged*)
-                    log_to_sys "Success. IP/Prefix [$CURRENT_IP] registered. (Response: $RESPONSE)"
+                    log_to_sys "Success. IP [$CURRENT_IP2] registered. (Response: $RESPONSE)"
                     LAST_IP="$CURRENT_IP"
                     IS_FIRST_RUN=0
                     ;;
