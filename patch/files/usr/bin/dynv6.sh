@@ -1,5 +1,28 @@
 #!/bin/sh
 
+
+# 1. 太平洋电脑网 IP API
+# 响应格式: if(window.IPCallBack) {IPCallBack({"ip":"202.27.85.42","err":""});}
+echo "1. PConline IP:"
+curl -s https://whois.pconline.com.cn/ipJson.jsp | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}'
+
+# 2. DDNSPOD IPv4
+# 响应格式: 19.27.81.42
+echo "2. DDNSPOD IP:"
+curl -s https://ipv4.ddnspod.com
+
+# 3. 花生壳 Oray CheckIP
+# 响应格式: Current IP Address: 13.27.8.4
+echo -e "\n3. Oray IP:"
+curl -s https://ddns.oray.com/checkip | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}'
+
+# 4. 中国科学技术大学 IP
+# 响应格式: 您的IP地址: 19.27.8.2来
+echo "4. USTC IP:"
+curl -s https://ip.ustc.edu.cn/ | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}'
+
+
+
 INTERFACE="br-lan"
 TOKEN=""
 DOMAIN="19991999.dynv6.net"
