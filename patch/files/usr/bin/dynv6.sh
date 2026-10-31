@@ -14,13 +14,13 @@ CHECK_IPV6=0
 function get_public_ipv4() {
     # 1. 太平洋电脑网 IP API
     ip1=$(curl -s --max-time 5 https://whois.pconline.com.cn/ipJson.jsp | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | head -n 1)
-
+    ip1="${ip1%.}"
     # 2. DDNSPOD IPv4
     ip2=$(curl -s --max-time 5 https://ipv4.ddnspod.com)
-
+    ip2="${ip2%.}"
     # 3. 花生壳 Oray CheckIP
     ip3=$(curl -s --max-time 5 https://ddns.oray.com/checkip | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | head -n 1)
-
+    ip3="${ip3%.}"
     # 4. 中国科学技术大学 IP
     #ip4=$(curl -s --max-time 5 https://ip.ustc.edu.cn/ | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | head -n 1)
 
