@@ -1,4 +1,4 @@
-name: Build_XG_040G_MD_OpenWrt_Custom
+name: Build_XG_040G_MD_Wrt-Custom
 
 permissions:
   contents: write
@@ -7,28 +7,29 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
+      repository: 
+        description: "Git repository."
+        required: true
+        type: choice
+        default: "immortalwrt/immortalwrt"
+        options:
+          - immortalwrt/immortalwrt
+          - openwrt/openwrt
+          - ericyin/immortalwrt
+          - ericyin/openwrt
       release_branch_tag:
-        description: "Existing release tag to upload the executables to."
+        description: "Branch"
         required: true
         type: string
-        default: "openwrt-25.12"
+        default: "main"
       log_switch:
         description: "Build logs"
         required: false
         default: false
         type: boolean
-  #push:
-  #  branches:
-  #    - main
-  #  paths:
-  #    - ".github/workflows/xg-040g-md-openwrt-25.12.yml"
-  #    - "config/**"
-  #    - "scripts/**"
-  #    - "feeds.conf.default"
 
 env:
   CONFIG_FILE: "config/xg-040g-md.config"
-  REPO_URL: https://github.com/ericyin/openwrt.git
   FEEDS_CONF: feeds.conf.default
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -36,6 +37,8 @@ env:
   KEEP_RELEASE_MARKER: "[keep-release]"
   CCACHE_DIR: /mnt/openwrt/ccache
   CCACHE_MAXSIZE: 5G
+  WRT_IP: 192.168.50.233
+  WRT_NAME: XG-040G-MD
   TZ: Asia/Shanghai
 
 jobs:
@@ -45,8 +48,10 @@ jobs:
     steps:
       - name: Set Environment Variable
         run: |
+          echo "REPO_URL=https://github.com/${{ inputs.repository }}.git" >> $GITHUB_ENV
           echo "REPO_BRANCH=${{ inputs.release_branch_tag }}" >> $GITHUB_ENV
-
+          echo "WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d-%H.%M.%S")" >> $GITHUB_ENV
+          
       - name: Checkout
         uses: actions/checkout@v6
 
@@ -95,10 +100,10 @@ jobs:
           echo "Checking out branch/tag: ${{ env.REPO_BRANCH }}"
           git clone --depth 1 --branch "$REPO_BRANCH" "$REPO_URL" openwrt
 
-      - name: Install Patches
+      - name: Install Any
         run: |
-          chmod +x $GITHUB_WORKSPACE/scripts/install-patch.sh
-          bash $GITHUB_WORKSPACE/scripts/install-patch.sh
+          chmod +x $GITHUB_WORKSPACE/scripts/install-any.sh
+          bash $GITHUB_WORKSPACE/scripts/install-any.sh
           
       - name: Move build dirs to /mnt/openwrt
         run: |
@@ -149,13 +154,8 @@ jobs:
         run: |
           cp -fv "${CONFIG_FILE}" openwrt/.config
           cd openwrt
-          if [[ "${{ env.REPO_BRANCH }}" == "main" ]]; then
-              echo "set an7581_DEVICE in config file for main..."
-              sed -i '/^CONFIG_TARGET_airoha_an7581_DEVICE_/d' .config
-              printf 'CONFIG_TARGET_airoha_an7581_DEVICE_%s=y\n' "nokia_xg-040g-md-tcboot" >> .config        
-              sed -i '/^CONFIG_LINUX_6_12=/d;/^CONFIG_LINUX_6_18=/d' .config
-              printf 'CONFIG_LINUX_6_18=y\n' >> .config
-          fi
+          chmod +x $GITHUB_WORKSPACE/scripts/setting.sh
+          bash $GITHUB_WORKSPACE/scripts/setting.sh
           make defconfig
           [ -e .config ] && cp .config defconfig-final.config
 
@@ -174,6 +174,25 @@ jobs:
           make download -j4 V=s
           # Remove small incomplete files <1KB
           find dl -size -1024c -delete
+
+      # - name: Prepare OpenWrt build environment
+      #   working-directory: ./openwrt
+      #   run: |
+      #     make -j"$(nproc)" prepare || \
+      #       make -j1 prepare V=s
+
+      # - name: Compile Sing-Box and dependencies
+      #   working-directory: ./openwrt
+      #   run: |
+      #     set -euo pipefail
+
+      #     test -f package/sing-box/Makefile
+      #     test -f package/libcronet/Makefile
+      #     test -f package/gn/Makefile
+      #     grep -qx 'CONFIG_PACKAGE_sing-box=y' .config
+
+      #     make -j"$(nproc)" package/sing-box/compile || \
+      #       make -j1 package/sing-box/compile V=s
 
       - name: Compile OpenWrt firmware
         id: compile
